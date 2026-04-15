@@ -1,14 +1,18 @@
-use tokio;
-use ollama_rs::{Ollama, generation::chat::ChatMessage};
+@Composable
+fun AIAdaptiveScaffold(
+    userIntent: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    val aiEngine = remember { AutonomousAIOrchestrator() }
+    val adaptedLayout by aiEngine.adaptLayout(userIntent).collectAsState()
 
-#[tokio::main]
-async fn main() {
-    let ollama = Ollama::default();
-    let response = ollama.generate_chat_completion(vec![
-        ChatMessage::system("You are Chief Android Architect Moe Kyaw Aung. Think at Distinguished level."),
-        ChatMessage::user("Design a self-healing modular architecture for 500 million users.")
-    ]).await.unwrap();
-
-    println!("Chief Vision Response: {}", response.response);
-
+    SeniorCyberTheme {
+        Scaffold(
+            topBar = { aiEngine.SmartTopBar(adaptedLayout) },
+            floatingActionButton = { aiEngine.IntelligentFAB(adaptedLayout) }
+        ) { padding ->
+            content()
+        }
+    }
 }
